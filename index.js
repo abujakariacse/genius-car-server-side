@@ -1,8 +1,8 @@
 const express = require('express');
-const cors = require('cors');
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
+const cors = require('cors');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 // middleware 
@@ -50,6 +50,23 @@ async function run() {
             const query = { _id: ObjectId(id) };
             const result = await serviceCollection.deleteOne(query);
             res.send(result)
+        });
+
+        // Update a data 
+        app.put('/service/:id', async (req, res) => {
+            const id = req.params.id;
+            const body = req.body;
+            const query = { _id: ObjectId(id) };
+            const doc = {
+                $set: {
+                    name: body.name,
+                    price: body.price
+                }
+            };
+            const options = { upsert: true };
+            const result = await serviceCollection.updateOne(query, doc, options);
+            res.send(result)
+
         })
 
     }
